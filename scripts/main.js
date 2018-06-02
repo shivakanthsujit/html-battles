@@ -57,32 +57,56 @@ function draw() {
     	{
     		score++;
     		document.getElementById("demo").innerHTML = score;
+    		alert("Score: "+score);
+        	x = 60;
+			y = 70;
+			isRunning = false;
+			clearInterval(inter);
+			ctx.fillStyle = "#F5DFDA"
+    		ctx.fillRect(0, 0, canvas.width, canvas.height);
+    		ctx.beginPath();
+    		ctx.arc(x, y, ballRadius, 0, Math.PI*2);
+    		ctx.fillStyle = "#0095DD";
+    		ctx.fill();
+    		ctx.closePath();
+    		drawTank();
+    		
     	}
     if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
         dx = -dx;
     }
     if(y + dy < ballRadius) {
-        document.location.reload();
+        //document.location.reload();
         alert("GAME OVER");
-        //var x = 60;
-		//var y = 70;
-		//isRunning = false;
-		//drawBall();
+       	x = 60;
+		y = 70;
+		isRunning = false;
+		clearInterval(inter);
+		ctx.fillStyle = "#F5DFDA"
+    	ctx.fillRect(0, 0, canvas.width, canvas.height);
+    	ctx.beginPath();
+    	ctx.arc(x, y, ballRadius, 0, Math.PI*2);
+    	ctx.fillStyle = "#0095DD";
+    	ctx.fill();
+    	ctx.closePath();
+    	drawTank();
 
     }
     else if(y + dy > canvas.height-ballRadius) {
  	          dy = -dy;
     }
 
-    //if(isRunning)
-    //{
+    if(isRunning)
+    {
     var t = performance.now();
     t = (t - t0)/1000;
     
     x += dx;
     y += dy;
-    dy = uy - 9.81*t;
-	//}
+    dy = Math.floor( uy - 9.81*t );
+	}
+	var coords1 = "X coords: " + x + ", Y coords: " + y + " , Score: "+score;
+    document.getElementById("demo").innerHTML = coords1;
 
 }
 

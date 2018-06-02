@@ -3,100 +3,124 @@ var ctx = canvas.getContext("2d");
 var inter;
 ctx.translate(0,canvas.height);
 ctx.scale(1,-1);
-var score = 0;
-var noOfShots = 3;
+var score = [0,0];
+var noOfShots = [3,3];
 var ballRadius = 5;
-var x = 60;
-var y = 70;
-var ux = 5;
-var uy = 5;
-var dx = ux;
-var dy = uy;
-var v = 10;
-var isRunning = false;
-var t0 ;
+var x = [60, canvas.width-60];
+var y = [70, 70];
+var ux = [5, -5];
+var uy = [5, 5];
+var dx = [ux[0], ux[1]];
+var dy = [uy[0], uy[1]];
+var v = 12;
+var isRunning = [false, false];
+var t0 = [0, 0];
+var playerNo = 0;
+var wEdge = [canvas.width-20-80, 100];
+var hEdge = [70, 70];
 
 drawTank();
 drawMount();
-drawB("#0095DD");
+drawB(0);
+drawB(1);
+var cr = ["#0095DD", "#F5B041"]
 
-function drawBall() {
-	if(!isRunning)
+function drawBall(bno) {
+	if(!isRunning[bno])
 	{
-		isRunning = true;
-		t0 = performance.now();
+		isRunning[bno] = true;
+		t0[bno] = performance.now();
 	}
-    drawB("#0095DD");
+    drawB(bno);
 }
 
 function draw() {
     ctx.fillStyle = "#F5DFDA";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    drawBall();
+    drawBall(playerNo);
     drawTank();
     drawMount();
     
-    if( x + dx > canvas.width-20-80 && y + dy < 70 )
+    if( ((playerNo == 0 && x[playerNo] + dx[playerNo] > wEdge[playerNo]) || (playerNo == 1 && x[playerNo] + dx[playerNo] < wEdge[playerNo] )) && y[playerNo] + dy[playerNo] < 70 )
     	{
-    		score++;
-    		document.getElementById("demo").innerHTML = score;
-    		alert("Score: " + score);
+    		score[playerNo]++;
+    		var sMessage = "Player 1: " + score[0] + " Player 2: " + score[1]; 
+    		document.getElementById("demo").innerHTML = sMessage;
+    		alert(sMessage);
         	resetScreen();
-    		if(noOfShots == 0)
+    		if(noOfShots[1] == 0)
 			{
-				alert("GAME OVER");
+				if(score[0] > score[1])
+					alert("GAME OVER: Player 1 Wins");
+				else if(score[0] < score[1])
+					alert("GAME OVER: Player 2 Wins");
+				else
+					alert("GAME OVER: Tie");
        		 	resetScreen();
-    			noOfShots = 3;
+    			noOfShots[0] = noOfShots[1] = 3;
+    			score[0] = score[1] = 0;
 			}
     		
     	}
-    if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) 
+    if(x[playerNo] + dx[playerNo] > canvas.width-ballRadius || x[playerNo] + dx[playerNo] < ballRadius) 
     {
-        dx = -dx;
+        dx[playerNo] = -dx[playerNo];
     }
-    if(y + dy < ballRadius) 
+    if(y[playerNo] + dy[playerNo] < ballRadius) 
     {
         alert("BALL LOST");
        	resetScreen();
-    	if(noOfShots == 0)
+    	if(noOfShots[1] == 0)
 			{
-				alert("GAME OVER");
+				if(score[0] > score[1])
+					alert("GAME OVER: Player 1 Wins");
+				else if(score[0] < score[1])
+					alert("GAME OVER: Player 2 Wins");
+				else
+					alert("GAME OVER: Tie");
        		 	resetScreen();
-    			noOfShots = 3;
+    			noOfShots[0] = noOfShots[1] = 3;
+    			score[0] = score[1] = 0;
 			}
 
     }
-    else if(y + dy > canvas.height-ballRadius) {
- 	          dy = -dy;
+    else if(y[playerNo] + dy[playerNo] > canvas.height-ballRadius) {
+ 	          dy[playerNo] = -dy[playerNo];
     }
 
-    if(isRunning)
+    if(isRunning[playerNo])
     {
 	    var t = performance.now();
-	    t = (t - t0) / 1000;
-	    x += dx;
-	    y += dy;
-	    dy = Math.floor( uy - 9.81*t );
+	    t = (t - t0[playerNo]) / 1000;
+	    x[playerNo] += dx[playerNo];
+	    y[playerNo] += dy[playerNo];
+	    dy[playerNo] = Math.floor( uy[playerNo] - 9.81*t );
 	    checkImpact();
 	}
-	var coords1 = "X coords: " + x + ", Y coords: " + y + " , Score: "+score + " , Shots Left: " + noOfShots;
+	var coords1 = "X coords: " + x[0] + " " + x[1] + ", Y coords: " + y[0] + " " + y[1] + " , Score: " + score[0] + " " + score[1] + " , Shots Left: " + noOfShots[0] + " " + noOfShots[1];
     document.getElementById("demo").innerHTML = coords1;
 }
 
 canvas.addEventListener('click', function(e) 
 {
-	noOfShots--;
+	noOfShots[playerNo]--;
 	var x1 = e.clientX;
 	var y1 = e.clientY;
-	var x0 = 68;
+	var x0 = [68, 8 + canvas.width-20-40];
 	var y0 = 477;
-	var angleRad = Math.atan((y0-y1)/(x1-x0));
-	ux = v * Math.cos(angleRad);
-	uy = v * Math.sin(angleRad);
-	var dx = ux;
-	var dy = uy;
-	var coords = "X coords: " + x1 + ", Y coords: " + y1;
-    document.getElementById("demo").innerHTML = coords;
+	if(playerNo == 0)
+		var angleRad = Math.atan((y0-y1)/(x1-x0[playerNo]));
+	else
+		var angleRad = Math.atan(-1 * (y0-y1)/(x1-x0[playerNo]));
+	ux[playerNo] = Math.floor(v * Math.cos(angleRad));
+	uy[playerNo] = Math.floor(v * Math.sin(angleRad));
+	if(playerNo == 0)
+		dx[playerNo] = ux[playerNo];
+	else
+		dx[playerNo] = -1 * ux[playerNo];
+	dy[playerNo] = uy[playerNo];
+	var coords = "X coords: " + x1 + ", Y coords: " + y1 + "Angle: " + angleRad*180/Math.PI;
+    document.getElementById("cl").innerHTML = coords;
 	inter = setInterval(draw, 10);
 });
 
@@ -157,35 +181,37 @@ function checkImpact()
 	ctx.lineTo(648,canvas.height-439);
 	ctx.lineTo(707,canvas.height-483);
 	ctx.lineTo(748,canvas.height-547);
-	if(ctx.isPointInPath(x+8,canvas.height-y))
+	if(ctx.isPointInPath(x[playerNo]+8,canvas.height-y[playerNo]))
 	{
-		alert("GAME OVER");
+		alert("NO POINT");
        	resetScreen();	
 	}
 }
 
 function resetScreen()
 {
-	x = 60;
-	y = 70;
-	isRunning = false;
+	x[0] = 60;
+	x[1] = canvas.width-60;	
+	y[0] = y[1] = 70;
+	isRunning[0] = isRunning[1] = false;
 	clearInterval(inter);
 	ctx.fillStyle = "#F5DFDA"
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
-	ctx.beginPath();
-	ctx.arc(x, y, ballRadius, 0, Math.PI*2);
-	ctx.fillStyle = "#0095DD";
-	ctx.fill();
-	ctx.closePath();
+	drawB(0);
+	drawB(1);
 	drawTank();
 	drawMount();
+	playerNo = (playerNo + 1) % 2;
 }
 
 function drawB(col) 
 {
 	ctx.beginPath();
-	ctx.arc(x, y, ballRadius, 0, Math.PI*2);
-	ctx.fillStyle = col;
+	ctx.arc(x[col], y[col], ballRadius, 0, Math.PI*2);
+	if(col == 0)
+		ctx.fillStyle = "#0095DD";
+	else
+		ctx.fillStyle = "#F5B041";
 	ctx.fill();
 	ctx.closePath();
 }

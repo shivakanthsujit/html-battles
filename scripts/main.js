@@ -5,20 +5,6 @@ ctx.translate(0,canvas.height);
 ctx.scale(1,-1);
 var score = 0;
 var noOfShots = 3;
-function drawTank()
-{
-	ctx.fillStyle = "#3498DB";
-	ctx.fillRect(20, 20, 80, 50);
-
-	ctx.beginPath();
-	ctx.fillStyle = "#3498DB";
-	ctx.rect(canvas.width-20-80,20,80,50);
-	ctx.fill();
-	ctx.closePath();
-}
-
-drawTank();
-drawMount();
 var ballRadius = 5;
 var x = 60;
 var y = 70;
@@ -27,25 +13,20 @@ var uy = 5;
 var dx = ux;
 var dy = uy;
 var v = 10;
-
-ctx.beginPath();
-ctx.arc(x, y, ballRadius, 0, Math.PI*2);
-ctx.fillStyle = "#0095DD";
-ctx.fill();
-ctx.closePath();
 var isRunning = false;
 var t0 ;
+
+drawTank();
+drawMount();
+drawB("#0095DD");
+
 function drawBall() {
 	if(!isRunning)
 	{
 		isRunning = true;
 		t0 = performance.now();
 	}
-    ctx.beginPath();
-    ctx.arc(x, y, ballRadius, 0, Math.PI*2);
-    ctx.fillStyle = "#0095DD";
-    ctx.fill();
-    ctx.closePath();
+    drawB("#0095DD");
 }
 
 function draw() {
@@ -59,9 +40,9 @@ function draw() {
     	{
     		score++;
     		document.getElementById("demo").innerHTML = score;
-    		alert("Score: "+score);
+    		alert("Score: " + score);
         	resetScreen();
-    		if(noOfShots==0)
+    		if(noOfShots == 0)
 			{
 				alert("GAME OVER");
        		 	resetScreen();
@@ -69,14 +50,15 @@ function draw() {
 			}
     		
     	}
-    if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
+    if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) 
+    {
         dx = -dx;
     }
-    if(y + dy < ballRadius) {
-        
-        alert("GAME OVER");
+    if(y + dy < ballRadius) 
+    {
+        alert("BALL LOST");
        	resetScreen();
-    	if(noOfShots==0)
+    	if(noOfShots == 0)
 			{
 				alert("GAME OVER");
        		 	resetScreen();
@@ -90,25 +72,22 @@ function draw() {
 
     if(isRunning)
     {
-    var t = performance.now();
-    t = (t - t0)/1000;
-    
-    x += dx;
-    y += dy;
-    dy = Math.floor( uy - 9.81*t );
-    checkImpact();
+	    var t = performance.now();
+	    t = (t - t0) / 1000;
+	    x += dx;
+	    y += dy;
+	    dy = Math.floor( uy - 9.81*t );
+	    checkImpact();
 	}
 	var coords1 = "X coords: " + x + ", Y coords: " + y + " , Score: "+score + " , Shots Left: " + noOfShots;
     document.getElementById("demo").innerHTML = coords1;
-
 }
 
-canvas.addEventListener('click', function(e) {
+canvas.addEventListener('click', function(e) 
+{
 	noOfShots--;
-	
 	var x1 = e.clientX;
 	var y1 = e.clientY;
-	//isRunning = true;
 	var x0 = 68;
 	var y0 = 477;
 	var angleRad = Math.atan((y0-y1)/(x1-x0));
@@ -121,15 +100,24 @@ canvas.addEventListener('click', function(e) {
 	inter = setInterval(draw, 10);
 });
 
-canvas.addEventListener('mousemove', function(e) {
-  
-    
+canvas.addEventListener('mousemove', function(e) 
+{
     var x11 = e.clientX;
     var y11 = e.clientY;
     var coords11 = "X coords: " + x11 + ", Y coords: " + y11 ;
     document.getElementById("coord").innerHTML = coords11;
-  
 });
+
+function drawTank()
+{
+	ctx.fillStyle = "#3498DB";
+	ctx.fillRect(20, 20, 80, 50);
+	ctx.beginPath();
+	ctx.fillStyle = "#F5B041";
+	ctx.rect(canvas.width-20-80,20,80,50);
+	ctx.fill();
+	ctx.closePath();
+}
 
 function drawMount()
 {
@@ -191,5 +179,13 @@ function resetScreen()
 	ctx.closePath();
 	drawTank();
 	drawMount();
-			
+}
+
+function drawB(col) 
+{
+	ctx.beginPath();
+	ctx.arc(x, y, ballRadius, 0, Math.PI*2);
+	ctx.fillStyle = col;
+	ctx.fill();
+	ctx.closePath();
 }

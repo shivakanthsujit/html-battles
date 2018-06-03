@@ -45,8 +45,9 @@ function draw() {
 	
     ctx.fillStyle = "#F5DFDA";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    var sMessage = "Player 1: " + score[0] + "\tPlayer 2: " + score[1]; 
-    document.getElementById("demo").innerHTML = sMessage;
+    var sMessage = "Player 1: " + score[0] + ", Player 2: " + score[1]; 
+    document.getElementById("demo").innerHTML = sMessage ;
+    document.getElementById("cl").innerHTML = " No. of Shots Left : Player 1: " + noOfShots[0] + ", Player 2: " + noOfShots[1];
     drawBall(playerNo);
     drawTank();
     drawMount();
@@ -54,8 +55,9 @@ function draw() {
     if( ((playerNo == 0 && x[playerNo] + dx[playerNo] > wEdge[playerNo]) || (playerNo == 1 && x[playerNo] + dx[playerNo] < wEdge[playerNo] )) && y[playerNo] + dy[playerNo] < 70 )
     	{
     		score[playerNo]++;
-    		var sMessage = "Player 1: " + score[0] + ",\t Player 2: " + score[1]; 
-    		document.getElementById("demo").innerHTML = sMessage;
+    		var sMessage = "Player 1: " + score[0] + ", Player 2: " + score[1]; 
+    		document.getElementById("demo").innerHTML = sMessage ;
+    		document.getElementById("cl").innerHTML = " No. of Shots Left : Player 1 : " + noOfShots[0] + ", Player 2: " + noOfShots[1];
     		alert(sMessage);
         	resetScreen();
         	isOver = true;
